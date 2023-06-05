@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Projekat</string>
+    <string name="youtubelink">youtubeLink</string>
+    <string name="download">Download</string>
 </resources>

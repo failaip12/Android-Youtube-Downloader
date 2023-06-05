@@ -3,6 +3,8 @@ package com.example.projekat.model;
 
 
 
+import android.os.Environment;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ public class Utils {
 
     public static void createOutDir(File outDir) throws IOException {
         if (!outDir.exists()) {
+            final String relativeLocation = Environment.DIRECTORY_DOWNLOADS + File.separator + outDir;
             boolean mkdirs = outDir.mkdirs();
             if (!mkdirs)
                 throw new IOException("Could not create output directory: " + outDir);

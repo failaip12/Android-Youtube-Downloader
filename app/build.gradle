@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.projekat"
-        minSdk 26
+        minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -44,4 +44,6 @@ dependencies {
     implementation 'com.google.apis:google-api-services-youtube:v3-rev20210915-1.32.1'
     implementation 'com.google.http-client:google-http-client-jackson2:1.41.0'
     implementation 'com.alibaba:fastjson:2.0.28'
+    implementation 'io.apisense:rhino-android:1.0'
+
 }

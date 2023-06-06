@@ -3,21 +3,17 @@ package com.example.projekat;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.DocumentsContract;
-import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.projekat.javatube.Youtube;
 
@@ -27,7 +23,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     Button downloadButton;
-
+    EditText ytLinkText;
     ActivityResultLauncher<Intent> directoryPickerLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
@@ -40,10 +36,14 @@ public class MainActivity extends AppCompatActivity {
                                     ExecutorService executor = Executors.newSingleThreadExecutor();
                                     executor.execute(() -> {
                                         try {
-                                            Youtube yt = new Youtube("https://www.youtube.com/watch?v=VouHJ3lTFCA");
-                                            Context context = MainActivity.this;
-                                            String savePath = getPathFromUri(context, treeUri); // Get the file path from the picked directory URI
-                                            yt.streams().getHighestResolution().download(context, savePath);
+                                            String ytlink = ytLinkText.getText().toString();
+                                            if (ytlink != null) {
+                                                Youtube yt = new Youtube(ytlink);
+                                                Context context = MainActivity.this;
+                                                String savePath = getPathFromUri(context, treeUri); // Get the file path from the picked directory URI
+                                                yt.streams().getHighestResolution().download(context, savePath);
+                                            }
+
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -59,9 +59,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         downloadButton = findViewById(R.id.downloadButton);
+        ytLinkText = findViewById(R.id.ytInput);
         downloadButton.setOnClickListener(view -> {
+                String ytLink = ytLinkText.getText().toString();
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                intent.putExtra("ytLink",ytLink);
                 directoryPickerLauncher.launch(intent);
         });
     }

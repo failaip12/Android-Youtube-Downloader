@@ -15,10 +15,14 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.widget.Toast;
+
+import com.example.projekat.DownloadActivity;
 
 public class Stream{
 
@@ -147,10 +151,15 @@ public class Stream{
             }
         }
     }
-
+    static long progress;
     public static void onProgress(long value){
         System.out.println(value + "%");
     }
+
+    public static long getProgress() {
+        return progress;
+    }
+
     public void download(Context context, String path) throws Exception {
         startDownload(context, path, title, Stream::onProgress);
     }
@@ -236,6 +245,7 @@ public class Stream{
         } catch (IOException e) {
             throw new Exception("Failed to write to output file", e);
         }
+
     }
 
 

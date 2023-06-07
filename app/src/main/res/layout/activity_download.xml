@@ -1,116 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Video Thumbnail -->
-    <ImageView
-        android:id="@+id/thumbnailImageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
-
-    <!-- Video Title -->
-    <TextView
-        android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/thumbnailImageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="@string/video_title"
-        android:textSize="18sp" />
-
-    <!-- Video Length -->
-    <TextView
-        android:id="@+id/lengthTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/titleTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:text="@string/video_length"
-        android:textSize="14sp" />
-
-    <!-- Video Qualities -->
-    <LinearLayout
-        android:id="@+id/qualitiesLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/lengthTextView"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Quality 1 -->
+        <!-- Video Thumbnail -->
+        <ImageView
+            android:id="@+id/thumbnailImageView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp" />
+
+        <!-- Video Title -->
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/thumbnailImageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/video_title"
+            android:textSize="18sp" />
+
+        <!-- Video Length -->
+        <TextView
+            android:id="@+id/lengthTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/titleTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:text="@string/video_length"
+            android:textSize="14sp" />
+
+        <!-- Video Qualities -->
         <LinearLayout
-            android:id="@+id/quality1Layout"
+            android:id="@+id/qualitiesLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_below="@id/lengthTextView"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical" />
 
-            <RadioButton
-                android:id="@+id/quality1RadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:id="@+id/quality1TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/quality_1" />
-
-            <TextView
-                android:id="@+id/quality1SizeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/size_1" />
-
-        </LinearLayout>
-
-        <!-- Quality 2 -->
-        <LinearLayout
-            android:id="@+id/quality2Layout"
-            android:layout_width="match_parent"
+        <!-- Download Button -->
+        <Button
+            android:id="@+id/parseButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_below="@id/qualitiesLayout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/download" />
 
-            <RadioButton
-                android:id="@+id/quality2RadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/quality2TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/quality_2" />
-
-            <TextView
-                android:id="@+id/quality2SizeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/size_2" />
-
+            <ProgressBar
+                android:id="@+id/downloadProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
-        <!-- Add more quality layouts if needed -->
-
-    </LinearLayout>
-
-    <!-- Download Button -->
-    <Button
-        android:id="@+id/parseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/qualitiesLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:enabled="false"
-        android:text="@string/download" />
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

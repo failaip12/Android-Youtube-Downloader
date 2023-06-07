@@ -329,7 +329,13 @@ public class StreamQuery{
                 if(s.getFps() != null){
                     map.put(s, s.getFps());
                 }
-            }else{
+            }
+            else if (Objects.equals(by, "size")) {
+                if ((int) s.getFileSize() > 0) {
+                    map.put(s, (int) s.getFileSize());
+                }
+            }
+                else{
                 throw new Exception("InvalidParameter");
             }
         }

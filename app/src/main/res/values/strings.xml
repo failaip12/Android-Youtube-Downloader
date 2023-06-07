@@ -4,9 +4,10 @@
     <string name="download">Download</string>
     <string name="video_title">Video Title</string>
     <string name="video_length">Video Length</string>
-    <string name="quality_1">Quality 1</string>
-    <string name="size_1">Size 1</string>
-    <string name="quality_2">Quality 2</string>
-    <string name="size_2">Size 2</string>
+    <string name="quality">Quality</string>
+    <string name="size">File Size: %1$s KB</string>
+    <string name="fps">%1$s FPS</string>
     <string name="parse">Parse</string>
+    <string name="audio_only">Audio Only</string>
+    <string name="audio_bitrate">%1$s kbps</string>
 </resources>

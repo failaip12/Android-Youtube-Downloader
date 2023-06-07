@@ -2,4 +2,11 @@
     <string name="app_name">Projekat</string>
     <string name="youtubelink">youtubeLink</string>
     <string name="download">Download</string>
+    <string name="video_title">Video Title</string>
+    <string name="video_length">Video Length</string>
+    <string name="quality_1">Quality 1</string>
+    <string name="size_1">Size 1</string>
+    <string name="quality_2">Quality 2</string>
+    <string name="size_2">Size 2</string>
+    <string name="parse">Parse</string>
 </resources>

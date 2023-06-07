@@ -8,23 +8,37 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <EditText
             android:id="@+id/ytInput"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:autofillHints=""
             android:ems="10"
+            android:hint="@string/youtubelink"
             android:inputType="textPersonName"
-            android:text="@string/youtubelink" />
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/downloadButton"
+            android:id="@+id/parseButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/download" />
+            android:text="@string/parse"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toEndOf="@+id/ytInput"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

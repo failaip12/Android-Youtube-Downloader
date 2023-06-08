@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.projekat.javatube.Stream;
@@ -99,9 +100,17 @@ public class DownloadActivity extends AppCompatActivity {
             public void run() {
                 // Update progress text
                 if (selectedStream != null) {
-                    titleTextView.setText(String.valueOf(Stream.getProgress()));
+                    downloadProgressBar.setProgress((int) Stream.getProgress());
                 }
-
+                if(convert) {
+                    Toast.makeText(DownloadActivity.this, "Finished downloading now converting please wait.", Toast.LENGTH_LONG).show();
+                    downloadButton.setText(R.string.converting);
+                    downloadButton.setEnabled(false);
+                }
+                if(!convert) {
+                    downloadButton.setText(R.string.download);
+                    downloadButton.setEnabled(true);
+                }
                 // Call the runnable again after a delay
                 progressHandler.postDelayed(this, 100); // Update every 1 second
             }
@@ -359,6 +368,7 @@ public class DownloadActivity extends AppCompatActivity {
         }
         deleteTempFile(videoPath);
         deleteTempFile(audioPath);
+        convert = false;
     }
     private void deleteTempFile(String filePath) {
         System.out.println(filePath);

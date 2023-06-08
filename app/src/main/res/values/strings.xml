@@ -10,4 +10,5 @@
     <string name="parse">Parse</string>
     <string name="audio_only">Audio Only</string>
     <string name="audio_bitrate">%1$s kbps</string>
+    <string name="converting">Converting</string>
 </resources>

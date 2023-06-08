@@ -48,7 +48,7 @@
 
         <!-- Download Button -->
         <Button
-            android:id="@+id/parseButton"
+            android:id="@+id/downloadButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/qualitiesLayout"

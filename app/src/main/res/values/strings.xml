@@ -3,7 +3,7 @@
     <string name="youtubelink">youtubeLink</string>
     <string name="download">Download</string>
     <string name="video_title">Video Title</string>
-    <string name="video_length">Video Length</string>
+    <string name="video_length">%1$s:%2$s</string>
     <string name="quality">Quality</string>
     <string name="size">File Size: %1$s KB</string>
     <string name="fps">%1$s FPS</string>

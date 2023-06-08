@@ -134,8 +134,9 @@ public class Stream{
         }
     }
 
-    private String safeFileName(String s){
-        return s.replaceAll("[\"'#$%*,.:;<>?\\\\^|~/]", " ");
+    public String safeFileName(String s){
+        s=s.replaceAll("[\"'#$%*,.:;<>?\\\\^|~/]", " ");
+        return s.replace(" ", "_");
     }
 
     private void checkFile(Context context, String filePath) throws IOException {
@@ -153,6 +154,7 @@ public class Stream{
     }
     static long progress;
     public static void onProgress(long value){
+        progress = value;
         System.out.println(value + "%");
     }
 
@@ -176,7 +178,7 @@ public class Stream{
         startDownload(context, path, fileName, progress);
     }
     private void startDownload(Context context, String path, String fileName, Consumer<Long> progress) throws Exception {
-        String savePath = path + safeFileName(fileName) + "." + subType;
+        String savePath = path + safeFileName(fileName) + fileSize + "." + subType; //Scuffed fix but i cant be bothered
         if(!isOtf){
             long startSize = 0;
             long stopPos;
@@ -202,7 +204,6 @@ public class Stream{
                 }
                 startSize = startSize + chunkReceived.length;
                 File outputFile = new File(savePath);
-                System.out.println(savePath);
                 try (FileOutputStream fos = new FileOutputStream(outputFile, true)) {
                     fos.write(chunkReceived);
                 }

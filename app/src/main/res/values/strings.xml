@@ -5,7 +5,8 @@
     <string name="video_title">Video Title</string>
     <string name="video_length">%1$s:%2$s</string>
     <string name="quality">Quality</string>
-    <string name="size">File Size: %1$s KB</string>
+    <string name="sizeKB">File Size: %1$s KB</string>
+    <string name="sizeMB">File Size: %1$s MB</string>
     <string name="fps">%1$s FPS</string>
     <string name="parse">Parse</string>
     <string name="audio_only">Audio Only</string>

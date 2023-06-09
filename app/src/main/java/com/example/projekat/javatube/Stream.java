@@ -155,7 +155,6 @@ public class Stream{
     static long progress;
     public static void onProgress(long value){
         progress = value;
-        System.out.println(value + "%");
     }
 
     public static long getProgress() {

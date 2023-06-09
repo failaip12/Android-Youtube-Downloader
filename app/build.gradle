@@ -33,22 +33,15 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.google.api-client:google-api-client:1.32.1'
-    implementation 'com.google.apis:google-api-services-youtube:v3-rev20220412-1.31.1'
-    implementation 'com.google.apis:google-api-services-youtube:v3-rev20210915-1.32.1'
-    implementation 'com.google.http-client:google-http-client-jackson2:1.41.0'
-    implementation 'com.alibaba:fastjson:2.0.28'
+    implementation 'com.google.android.material:material:1.9.0'
+
+
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.4'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'io.apisense:rhino-android:1.0'
 
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-    implementation 'com.arthenica:mobile-ffmpeg-full:4.4'
-
 }

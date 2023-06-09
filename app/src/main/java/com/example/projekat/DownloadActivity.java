@@ -27,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.projekat.javatube.Stream;
@@ -103,7 +102,6 @@ public class DownloadActivity extends AppCompatActivity {
                     downloadProgressBar.setProgress((int) Stream.getProgress());
                 }
                 if(convert) {
-                    Toast.makeText(DownloadActivity.this, "Finished downloading now converting please wait.", Toast.LENGTH_LONG).show();
                     downloadButton.setText(R.string.converting);
                     downloadButton.setEnabled(false);
                 }
@@ -138,16 +136,15 @@ public class DownloadActivity extends AppCompatActivity {
                 title = yt.getTitle();
                 thumbnailURL = yt.getThumbnailUrl();
                 HashMap<String, String> filters = new HashMap<>();
-                //filters.put("progressive", "true");
-                filters.put("progressive", "false");
+                filters.put("adaptive", "true");
+                filters.put("mineType", "video/mp4");
                 streams_video = yt.streams().filter(filters).orderBy("size").getAll();
                 Collections.reverse(streams_video);
-                Youtube yt1 = new Youtube(ytLink);
-                HashMap<String, String> filters1 = new HashMap<>();
-                filters1.put("type", "audio");
-                filters1.put("onlyAudio", "true");
-                streams_audio = yt.streams().filter(filters1).orderBy("abr").getAll();
+                filters.clear();
+                filters.put("onlyAudio", "true");
+                streams_audio = yt.streams().filter(filters).orderBy("abr").getAll();
                 Collections.reverse(streams_audio);
+                best_audio_stream = yt.streams().getOnlyAudio();
                 runOnUiThread(() -> {
                     displayYouTubeData();
                     populateQualitiesLayout();
@@ -263,9 +260,12 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     private TextView createSizeTextView(Stream stream) {
+        String filesizeKB = String.valueOf((int) stream.getFileSize() / 1024 + best_audio_stream.getFileSize() / 1024);
         TextView sizeTextView = new TextView(this);
         sizeTextView.setPadding(16, 0, 16, 0);
-        sizeTextView.setText(getString(R.string.size, String.valueOf((int) stream.getFileSize() / 1024)));
+        sizeTextView.setText(getString(R.string.sizeKB,filesizeKB));
+        if(Integer.parseInt(filesizeKB) > 10000)
+            sizeTextView.setText(getString(R.string.sizeMB, String.valueOf(Integer.parseInt(filesizeKB) / 1024)));
         return sizeTextView;
     }
 
@@ -296,7 +296,7 @@ public class DownloadActivity extends AppCompatActivity {
                     }
                 });
     }
-    private static String getPathFromUri(Context context, Uri uri) {
+    private static String getPathFromUri(Uri uri) {
         String documentId = DocumentsContract.getTreeDocumentId(uri);
         String[] parts = documentId.split(":");
         if (parts.length > 1 && "primary".equalsIgnoreCase(parts[0])) {
@@ -316,18 +316,14 @@ public class DownloadActivity extends AppCompatActivity {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
-                    String savePath = getPathFromUri(context, treeUri); // Get the file path from the picked directory URI
+                    String savePath = getPathFromUri(treeUri); // Get the file path from the picked directory URI
                     selectedStream.download(context, savePath);
-                    if(streams_video.contains(selectedStream)) {
-                        savePathVideo = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + selectedStream.getFileSize() + "." + selectedStream.getSubType();
-                        Youtube yt = new Youtube(ytLink);
-                        best_audio_stream = yt.streams().getOnlyAudio();
-                        best_audio_stream.download(context, savePath);
-                        savePathAudio = savePath + best_audio_stream.safeFileName(best_audio_stream.getTitle()) + best_audio_stream.getFileSize() + "." + best_audio_stream.getSubType();
-                        convert = true;
-                        savePathCombined = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + "." + selectedStream.getSubType();
-                        convertUsingFFMpeg(savePathVideo, savePathAudio, savePathCombined);
-                    }
+                    savePathVideo = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + selectedStream.getFileSize() + "." + selectedStream.getSubType();
+                    best_audio_stream.download(context, savePath);
+                    savePathAudio = savePath + best_audio_stream.safeFileName(best_audio_stream.getTitle()) + best_audio_stream.getFileSize() + "." + best_audio_stream.getSubType();
+                    convert = true;
+                    savePathCombined = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + "." + selectedStream.getSubType();
+                    convertUsingFFMpeg(savePathVideo, savePathAudio, savePathCombined);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -360,18 +356,17 @@ public class DownloadActivity extends AppCompatActivity {
 
         if (rc == RETURN_CODE_SUCCESS) {
             Log.i(Config.TAG, "Command execution completed successfully.");
+            deleteTempFile(videoPath);
+            deleteTempFile(audioPath);
         } else if (rc == RETURN_CODE_CANCEL) {
             Log.i(Config.TAG, "Command execution cancelled by user.");
         } else {
             Log.i(Config.TAG, String.format("Command execution failed with rc=%d and the output below.", rc));
             Config.printLastCommandOutput(Log.INFO);
         }
-        deleteTempFile(videoPath);
-        deleteTempFile(audioPath);
         convert = false;
     }
     private void deleteTempFile(String filePath) {
-        System.out.println(filePath);
         File file = new File(filePath);
         boolean deleted = file.delete();
         if (deleted) {

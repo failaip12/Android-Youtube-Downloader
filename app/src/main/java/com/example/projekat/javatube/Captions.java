@@ -100,7 +100,7 @@ public class Captions {
                 write.close();
             }
             catch (IOException ex) {
-                System.out.print("Invalid Path");
+                //System.out.print("Invalid Path");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -112,7 +112,7 @@ public class Captions {
                 write.close();
             }
             catch (IOException ex) {
-                System.out.print("Invalid Path");
+                //System.out.print("Invalid Path");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

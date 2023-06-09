@@ -8,18 +8,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.projekat.databinding.ActivityMainBinding;
 import com.example.projekat.javatube.Youtube;
 
 public class MainActivity extends AppCompatActivity {
-    Button parseButton;
-    EditText ytLinkText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        parseButton = findViewById(R.id.parseButton);
-        ytLinkText = findViewById(R.id.ytInput);
+        com.example.projekat.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        Button parseButton = binding.parseButton;
+        EditText ytLinkText = binding.ytInput;
         parseButton.setOnClickListener(view -> {
             String ytLink = ytLinkText.getText().toString();
             try {

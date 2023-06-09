@@ -20,10 +20,7 @@ import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -42,16 +39,11 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+import com.example.projekat.databinding.ActivityDownloadBinding;
 public class DownloadActivity extends AppCompatActivity {
 
-    // Views
-    private ImageView thumbnailImageView;
-    private TextView titleTextView;
-    private TextView lengthTextView;
-    private ProgressBar downloadProgressBar;
-    private Button downloadButton;
-    private LinearLayout qualitiesLayout;
+    // View Binding
+    private ActivityDownloadBinding binding;
 
     // YouTube data
     private String ytLink;
@@ -83,15 +75,15 @@ public class DownloadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download);
+        binding = ActivityDownloadBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         convert = false;
-        initializeViews();
         extractYouTubeData();
         initializeDirectoryPickerLauncher();
-        downloadButton.setEnabled(false);
+        binding.downloadButton.setEnabled(false);
 
         downloadHandler = new DownloadHandler(this);
-        downloadButton.setOnClickListener(view -> pickDirectoryForDownload());
+        binding.downloadButton.setOnClickListener(view -> pickDirectoryForDownload());
 
         progressHandler = new Handler(Looper.getMainLooper());
         progressRunnable = new Runnable() {
@@ -99,15 +91,15 @@ public class DownloadActivity extends AppCompatActivity {
             public void run() {
                 // Update progress text
                 if (selectedStream != null) {
-                    downloadProgressBar.setProgress((int) Stream.getProgress());
+                    binding.downloadProgressBar.setProgress((int) Stream.getProgress());
                 }
                 if(convert) {
-                    downloadButton.setText(R.string.converting);
-                    downloadButton.setEnabled(false);
+                    binding.downloadButton.setText(R.string.converting);
+                    binding.downloadButton.setEnabled(false);
                 }
                 if(!convert) {
-                    downloadButton.setText(R.string.download);
-                    downloadButton.setEnabled(true);
+                    binding.downloadButton.setText(R.string.download);
+                    binding.downloadButton.setEnabled(true);
                 }
                 // Call the runnable again after a delay
                 progressHandler.postDelayed(this, 100); // Update every 1 second
@@ -116,15 +108,6 @@ public class DownloadActivity extends AppCompatActivity {
 
         // Start updating progress
         progressHandler.post(progressRunnable);
-    }
-
-    private void initializeViews() {
-        thumbnailImageView = findViewById(R.id.thumbnailImageView);
-        titleTextView = findViewById(R.id.titleTextView);
-        lengthTextView = findViewById(R.id.lengthTextView);
-        downloadProgressBar = findViewById(R.id.downloadProgressBar);
-        downloadButton = findViewById(R.id.downloadButton);
-        qualitiesLayout = findViewById(R.id.qualitiesLayout);
     }
 
     private void extractYouTubeData() {
@@ -156,18 +139,18 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     private void displayYouTubeData() {
-        titleTextView.setText(title);
+        binding.titleTextView.setText(title);
         if(Integer.parseInt(length) < 60) {
-            lengthTextView.setText(length);
+            binding.lengthTextView.setText(length);
         }
         else {
             String minutes = String.valueOf(Integer.parseInt(length) / 60);
             String seconds = String.valueOf(Integer.parseInt(length) % 60);
             if(Integer.parseInt(seconds)<10)
                 seconds = "0" + seconds;
-            lengthTextView.setText(getString(R.string.video_length, minutes, seconds));
+            binding.lengthTextView.setText(getString(R.string.video_length, minutes, seconds));
         }
-        Glide.with(this).load(thumbnailURL).into(thumbnailImageView);
+        Glide.with(this).load(thumbnailURL).into(binding.thumbnailImageView);
     }
 
     private void populateQualitiesLayout() {
@@ -188,7 +171,7 @@ public class DownloadActivity extends AppCompatActivity {
             qualityLayout.addView(radioButton);
             qualityLayout.addView(createFPSTextView(stream));
             qualityLayout.addView(createSizeTextView(stream));
-            qualitiesLayout.addView(qualityLayout);
+            binding.qualitiesLayout.addView(qualityLayout);
         }
 
         for (Stream stream : streams_audio) {
@@ -197,11 +180,11 @@ public class DownloadActivity extends AppCompatActivity {
             qualityLayout.addView(radioButton);
             qualityLayout.addView(createABRTextView(stream));
             qualityLayout.addView(createSizeTextView(stream));
-            qualitiesLayout.addView(qualityLayout);
+            binding.qualitiesLayout.addView(qualityLayout);
         }
 
-        qualitiesLayout.addView(qualityRadioGroup);
-        uncheckOtherRadioButtons(qualitiesLayout, null);
+        binding.qualitiesLayout.addView(qualityRadioGroup);
+        uncheckOtherRadioButtons(binding.qualitiesLayout, null);
     }
 
     private LinearLayout createQualityLayout(LinearLayout.LayoutParams layoutParams) {
@@ -225,8 +208,8 @@ public class DownloadActivity extends AppCompatActivity {
         radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 selectedStream = (Stream) buttonView.getTag(); // Get the selected stream from the tag
-                uncheckOtherRadioButtons(qualitiesLayout, radioButton);
-                downloadButton.setEnabled(true);
+                uncheckOtherRadioButtons(binding.qualitiesLayout, radioButton);
+                binding.downloadButton.setEnabled(true);
             }
         });
         return radioButton;
@@ -245,8 +228,8 @@ public class DownloadActivity extends AppCompatActivity {
         radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 selectedStream = (Stream) buttonView.getTag(); // Get the selected stream from the tag
-                uncheckOtherRadioButtons(qualitiesLayout, radioButton);
-                downloadButton.setEnabled(true);
+                uncheckOtherRadioButtons(binding.qualitiesLayout, radioButton);
+                binding.downloadButton.setEnabled(true);
             }
         });
         return radioButton;
@@ -318,12 +301,14 @@ public class DownloadActivity extends AppCompatActivity {
                 try {
                     String savePath = getPathFromUri(treeUri); // Get the file path from the picked directory URI
                     selectedStream.download(context, savePath);
-                    savePathVideo = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + selectedStream.getFileSize() + "." + selectedStream.getSubType();
-                    best_audio_stream.download(context, savePath);
-                    savePathAudio = savePath + best_audio_stream.safeFileName(best_audio_stream.getTitle()) + best_audio_stream.getFileSize() + "." + best_audio_stream.getSubType();
-                    convert = true;
-                    savePathCombined = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + "." + selectedStream.getSubType();
-                    convertUsingFFMpeg(savePathVideo, savePathAudio, savePathCombined);
+                    if(streams_video.contains(selectedStream)) {
+                        savePathVideo = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + selectedStream.getFileSize() + "." + selectedStream.getSubType();
+                        best_audio_stream.download(context, savePath);
+                        savePathAudio = savePath + best_audio_stream.safeFileName(best_audio_stream.getTitle()) + best_audio_stream.getFileSize() + "." + best_audio_stream.getSubType();
+                        convert = true;
+                        savePathCombined = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + "." + selectedStream.getSubType();
+                        convertUsingFFMpeg(savePathVideo, savePathAudio, savePathCombined);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

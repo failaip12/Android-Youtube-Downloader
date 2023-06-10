@@ -12,15 +12,14 @@ import com.example.projekat.databinding.ActivityMainBinding;
 import com.example.projekat.javatube.Youtube;
 
 public class MainActivity extends AppCompatActivity {
+    private ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.example.projekat.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Button parseButton = binding.parseButton;
-        EditText ytLinkText = binding.ytInput;
-        parseButton.setOnClickListener(view -> {
-            String ytLink = ytLinkText.getText().toString();
+        binding.parseButton.setOnClickListener(view -> {
+            String ytLink = binding.ytInput.getText().toString();
             try {
                 Youtube yt = new Youtube(ytLink);
                 Intent intent = new Intent(MainActivity.this, DownloadActivity.class);

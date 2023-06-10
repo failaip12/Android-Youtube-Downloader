@@ -1,8 +1,5 @@
 package com.example.projekat;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +8,7 @@ import androidx.documentfile.provider.DocumentFile;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,12 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.projekat.javatube.Stream;
 import com.example.projekat.javatube.Youtube;
 
 import com.arthenica.mobileffmpeg.Config;
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 import com.arthenica.mobileffmpeg.FFmpeg;
 
 import java.io.File;
@@ -71,6 +72,7 @@ public class DownloadActivity extends AppCompatActivity {
     private String savePathAudio;
     private String savePathCombined;
     private boolean convert;
+    private boolean download;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class DownloadActivity extends AppCompatActivity {
         binding = ActivityDownloadBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         convert = false;
+        download = false;
         extractYouTubeData();
         initializeDirectoryPickerLauncher();
         binding.downloadButton.setEnabled(false);
@@ -89,15 +92,16 @@ public class DownloadActivity extends AppCompatActivity {
         progressRunnable = new Runnable() {
             @Override
             public void run() {
-                // Update progress text
-                if (selectedStream != null) {
+                // Update progress text\
+                if (selectedStream != null && !convert && download) {
                     binding.downloadProgressBar.setProgress((int) Stream.getProgress());
+                    binding.downloadButton.setEnabled(false);
                 }
                 if(convert) {
                     binding.downloadButton.setText(R.string.converting);
                     binding.downloadButton.setEnabled(false);
                 }
-                if(!convert) {
+                if(!convert && !download && selectedStream != null) {
                     binding.downloadButton.setText(R.string.download);
                     binding.downloadButton.setEnabled(true);
                 }
@@ -202,11 +206,6 @@ public class DownloadActivity extends AppCompatActivity {
         radioButton.setTag(stream);
         radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                selectedStream = (Stream) buttonView.getTag();
-            }
-        });
-        radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
                 selectedStream = (Stream) buttonView.getTag(); // Get the selected stream from the tag
                 uncheckOtherRadioButtons(binding.qualitiesLayout, radioButton);
                 binding.downloadButton.setEnabled(true);
@@ -220,11 +219,6 @@ public class DownloadActivity extends AppCompatActivity {
         radioButton.setPadding(16, 0, 16, 0);
         radioButton.setText(R.string.audio_only);
         radioButton.setTag(stream);
-        radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                selectedStream = (Stream) buttonView.getTag();
-            }
-        });
         radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 selectedStream = (Stream) buttonView.getTag(); // Get the selected stream from the tag
@@ -300,15 +294,18 @@ public class DownloadActivity extends AppCompatActivity {
             executor.execute(() -> {
                 try {
                     String savePath = getPathFromUri(treeUri); // Get the file path from the picked directory URI
+                    download = true;
                     selectedStream.download(context, savePath);
                     if(streams_video.contains(selectedStream)) {
                         savePathVideo = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + selectedStream.getFileSize() + "." + selectedStream.getSubType();
                         best_audio_stream.download(context, savePath);
+                        download = false;
                         savePathAudio = savePath + best_audio_stream.safeFileName(best_audio_stream.getTitle()) + best_audio_stream.getFileSize() + "." + best_audio_stream.getSubType();
                         convert = true;
                         savePathCombined = savePath + selectedStream.safeFileName(selectedStream.getTitle()) + "." + selectedStream.getSubType();
                         convertUsingFFMpeg(savePathVideo, savePathAudio, savePathCombined);
                     }
+                    download = false;
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -336,21 +333,32 @@ public class DownloadActivity extends AppCompatActivity {
             }
         }
     }
-    private void convertUsingFFMpeg(String videoPath, String audioPath, String combinedPath) {
-        int rc = FFmpeg.execute("-i " + videoPath  + " -i " + audioPath + " -c:v copy -c:a aac " + combinedPath);
 
-        if (rc == RETURN_CODE_SUCCESS) {
-            Log.i(Config.TAG, "Command execution completed successfully.");
-            deleteTempFile(videoPath);
-            deleteTempFile(audioPath);
-        } else if (rc == RETURN_CODE_CANCEL) {
-            Log.i(Config.TAG, "Command execution cancelled by user.");
-        } else {
-            Log.i(Config.TAG, String.format("Command execution failed with rc=%d and the output below.", rc));
-            Config.printLastCommandOutput(Log.INFO);
-        }
-        convert = false;
+    private void convertUsingFFMpeg(String videoPath, String audioPath, String combinedPath) {
+        int videoLength = MediaPlayer.create(DownloadActivity.this, Uri.parse(videoPath)).getDuration();
+        Config.enableStatisticsCallback(newStatistics -> {
+            float progress = Float.parseFloat(String.valueOf(newStatistics.getTime())) / videoLength;
+            float progressFinal = progress * 100;
+            binding.downloadProgressBar.setProgress((int) progressFinal);
+        });
+
+        FFmpeg.executeAsync("-i " + videoPath  + " -i " + audioPath + " -c:v copy -c:a aac " + combinedPath, (executionId, returnCode) -> {
+            if (returnCode == RETURN_CODE_SUCCESS) {
+                Toast.makeText(DownloadActivity.this, "All done, now you can watch your video.", Toast.LENGTH_SHORT).show();
+                deleteTempFile(videoPath);
+                deleteTempFile(audioPath);
+                convert = false;
+            } else if (returnCode == RETURN_CODE_CANCEL) {
+                convert = false;
+            } else {
+                Toast.makeText(DownloadActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
+
+
+
     private void deleteTempFile(String filePath) {
         File file = new File(filePath);
         boolean deleted = file.delete();

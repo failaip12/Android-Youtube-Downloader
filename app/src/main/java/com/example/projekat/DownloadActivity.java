@@ -164,11 +164,6 @@ public class DownloadActivity extends AppCompatActivity {
         int margin = 18;
         layoutParams.setMargins(margin, margin, margin, margin);
 
-        // Create the RadioGroup for video streams
-        RadioGroup qualityRadioGroup = new RadioGroup(this);
-        qualityRadioGroup.setLayoutParams(layoutParams);
-        qualityRadioGroup.setOrientation(LinearLayout.VERTICAL);
-
         for (Stream stream : streams_video) {
             LinearLayout qualityLayout = createQualityLayout(layoutParams);
             RadioButton radioButton = createVideoRadioButton(stream);
@@ -186,8 +181,6 @@ public class DownloadActivity extends AppCompatActivity {
             qualityLayout.addView(createSizeTextView(stream));
             binding.qualitiesLayout.addView(qualityLayout);
         }
-
-        binding.qualitiesLayout.addView(qualityRadioGroup);
         uncheckOtherRadioButtons(binding.qualitiesLayout, null);
     }
 
@@ -284,11 +277,9 @@ public class DownloadActivity extends AppCompatActivity {
     }
     private class DownloadHandler {
         private final Context context;
-
         DownloadHandler(Context context) {
             this.context = context;
         }
-
         void download(Uri treeUri) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
